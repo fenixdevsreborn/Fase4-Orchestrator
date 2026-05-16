@@ -7,6 +7,7 @@ $ErrorActionPreference = "Stop"
 $RootDir = Resolve-Path (Join-Path $PSScriptRoot "..")
 $UsersLocalDir = Join-Path $RootDir "Fase3-UsersAPI/k8s/local"
 $GamesLocalDir = Join-Path $RootDir "Fase3-GamesAPI/k8s/local"
+$NotificationsK8sDir = Join-Path $RootDir "Fase4-NotificationAPI/k8s"
 
 function Require-Env([string]$Name) {
   $value = [Environment]::GetEnvironmentVariable($Name)
@@ -57,6 +58,8 @@ kubectl apply -f (Join-Path $GamesLocalDir "03-redis.yaml")
 Write-Host "Aplicando microsservicos..." -ForegroundColor Green
 kubectl apply -f (Join-Path $UsersLocalDir "04-users-api.yaml")
 kubectl apply -f (Join-Path $UsersLocalDir "05-service.yaml")
+kubectl apply -f (Join-Path $NotificationsK8sDir "notifications-configmap.yml")
+kubectl apply -f (Join-Path $NotificationsK8sDir "notifications-worker-deployment.yml")
 kubectl apply -f (Join-Path $GamesLocalDir "04-games-api.yaml")
 kubectl apply -f (Join-Path $GamesLocalDir "05-service.yaml")
 
@@ -67,6 +70,7 @@ kubectl rollout status deployment/dynamodb-local -n $Namespace
 kubectl rollout status deployment/elasticsearch -n $Namespace
 kubectl rollout status deployment/redis -n $Namespace
 kubectl rollout status deployment/users-api -n $Namespace
+kubectl rollout status deployment/notifications-worker -n $Namespace
 kubectl rollout status deployment/games-api -n $Namespace
 
 kubectl get pods -n $Namespace -o wide

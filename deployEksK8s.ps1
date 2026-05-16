@@ -10,6 +10,7 @@ $ErrorActionPreference = "Stop"
 $RootDir = Resolve-Path (Join-Path $PSScriptRoot "..")
 $UsersEksDir = Join-Path $RootDir "Fase3-UsersAPI/k8s/eks"
 $GamesEksDir = Join-Path $RootDir "Fase3-GamesAPI/k8s/eks"
+$NotificationsK8sDir = Join-Path $RootDir "Fase4-NotificationAPI/k8s"
 
 function Require-Env([string]$Name) {
   $value = [Environment]::GetEnvironmentVariable($Name)
@@ -69,6 +70,8 @@ kubectl apply -f (Join-Path $UsersEksDir "04-users-api.yaml")
 kubectl apply -f (Join-Path $UsersEksDir "05-service.yaml")
 kubectl apply -f (Join-Path $UsersEksDir "06-hpa.yaml")
 kubectl apply -f (Join-Path $UsersEksDir "07-ingress.yaml")
+kubectl apply -f (Join-Path $NotificationsK8sDir "notifications-configmap.yml")
+kubectl apply -f (Join-Path $NotificationsK8sDir "notifications-worker-deployment.yml")
 kubectl apply -f (Join-Path $GamesEksDir "04-games-api.yaml")
 kubectl apply -f (Join-Path $GamesEksDir "05-service.yaml")
 kubectl apply -f (Join-Path $GamesEksDir "06-hpa.yaml")
@@ -80,6 +83,7 @@ kubectl rollout status statefulset/postgres -n $Namespace
 kubectl rollout status deployment/elasticsearch -n $Namespace
 kubectl rollout status deployment/redis -n $Namespace
 kubectl rollout status deployment/users-api -n $Namespace
+kubectl rollout status deployment/notifications-worker -n $Namespace
 kubectl rollout status deployment/games-api -n $Namespace
 
 kubectl get pods -n $Namespace -o wide
