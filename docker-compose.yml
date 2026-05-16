@@ -203,13 +203,13 @@ services:
     networks:
       - ms-network
 
-  notifications-worker:
+  payments-worker:
+    image: fase4-payments-api:latest
     build:
-      context: ../Fase2-NotificationsAPI
+      context: ../Fase4-PaymentsAPI
       dockerfile: src/Dockerfile
-    container_name: ms-notifications-worker
+    container_name: fiap-payments-worker
     environment:
-      ASPNETCORE_ENVIRONMENT: Development
       DOTNET_ENVIRONMENT: Development
       RabbitMq__Host: rabbitmq
       RabbitMq__Port: "5672"
@@ -217,8 +217,9 @@ services:
       RabbitMq__Password: "${RABBITMQ_PASSWORD:?RABBITMQ_PASSWORD is required}"
       RabbitMq__VirtualHost: fiap
       RabbitMq__ExchangeName: fiap.events
+      RabbitMq__PaymentQueueName: payment-queue
       RabbitMq__NotificationQueueName: notification-queue
-      RabbitMq__UserCreatedQueueName: notification-queue
+      MT_LICENSE: Community
     depends_on:
       rabbitmq:
         condition: service_healthy
