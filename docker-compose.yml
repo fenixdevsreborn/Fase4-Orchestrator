@@ -203,6 +203,28 @@ services:
     networks:
       - ms-network
 
+  notifications-worker:
+    build:
+      context: ../Fase2-NotificationsAPI
+      dockerfile: src/Dockerfile
+    container_name: ms-notifications-worker
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      DOTNET_ENVIRONMENT: Development
+      RabbitMq__Host: rabbitmq
+      RabbitMq__Port: "5672"
+      RabbitMq__Username: "${RABBITMQ_USERNAME:?RABBITMQ_USERNAME is required}"
+      RabbitMq__Password: "${RABBITMQ_PASSWORD:?RABBITMQ_PASSWORD is required}"
+      RabbitMq__VirtualHost: fiap
+      RabbitMq__ExchangeName: fiap.events
+      RabbitMq__NotificationQueueName: notification-queue
+      RabbitMq__UserCreatedQueueName: notification-queue
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - ms-network
+
 volumes:
   postgres_data:
     name: fiap-postgres-data
